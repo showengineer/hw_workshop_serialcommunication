@@ -1,19 +1,26 @@
+// Change this to the expected size, check the python terminal for the correct number.
+const int expectedDataSize = 120;
+
 typedef struct {
   String column; 
   int row;
-} dataSelection;
+} DataSelection;
 
-dataSelection encodeInputs(String colName, int rowNum){
+String data[expectedDataSize];
+
+DataSelection encodeInputs(String colName, int rowNum){
   // do something with inputs to create a column key and row index
-  dataSelection selectionKeys {
+  Serial.println(colName);
+  Serial.println(buildSerialString(colName, String(rowNum)));
+  DataSelection selectionKeys {
     colName, rowNum
    };
   // return something in the shape of the given struct.
   return selectionKeys;
 }
 
-void requestData(dataSelection keys){
-  Serial.println(buildSerialString(keys.column, String(keys.row)));
+void requestData(DataSelection keys) {
+   Serial.println(buildSerialString(keys.column, String(keys.row)));
 }
 
 String buildSerialString(String key, String index){
@@ -34,49 +41,41 @@ String readSerialData(char endChar){
   return data;
 }
 
-String cleanReceivedDataString(String dirtyString){
+void putReceivedDataStringInData(String dirtyString){
   String subString = dirtyString;
   int i = 0;
-  String dataItems[];
-  while(subString.indexOf("$") > 0){
-    dataItems[i] = subString.substring(0, dirtyString.indexOf("$"));
-    subString = subString.substring(dirtyString.indexOf("$"), dirtyString.length)); 
-    i++;
+  while (dirtyString.indexOf("$") >= 0) {
+    data[i++] = dirtyString.substring(0, dirtyString.indexOf("$"));
+    dirtyString = dirtyString.substring(dirtyString.indexOf("$") + 1, dirtyString.length());
+    Serial.println(dirtyString);
   }
-  return dataItems;
+  data[i] = dirtyString;
 }
 
-void actuateOnData(String data[]){
-  if(data[0].equals("Aalsmeer")) {
-    digitalWrite(12, LOW); 
-  } else {
-    digitalWrite(12, HIGH); 
-  }
+void actuateOnData(String data[expectedDataSize]){
+  // actuate something based on the retrieved data
 }
 
 void setup() {
-  // put your setup code here, to run once:
   Serial.begin(9600);
-  dataSelection keys = encodeInputs("Municipalities", 1);
-  requestData(keys);
-  digitalWrite(12, HIGH); 
+  Serial.println("Connection established");
 }
 
-String data[];
-
 void loop() {  
+  
+  DataSelection keys = encodeInputs("Municipalities", -1);
+  requestData(keys);
+  
+  delay(100);
+  
   while(Serial.available() > 0){
-    // if packets available, retrieve data
+    // if bytes available, retrieve data
     String receivedData = "";
     receivedData = readSerialData('#');
-    data = cleanReceivedDataString(receivedData);
-    // actuate something
+    putReceivedDataStringInData(receivedData);
+    // actuate
     actuateOnData(data);
   }
 
-  // process inputs and request new data
-  int inputVal = analogRead(A0);
-  delay(200);
-  dataSelection keys = encodeInputs("Municipalities", map(inputVal, 0, 1023, 0, 341));
-  requestData(keys);
+
 }

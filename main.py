@@ -3,28 +3,32 @@ import time
 import pandas as pd
 
 # save file in the same folder as the python file.
-# file in the file name you need and add teh correct columns.
-data = pd.read_excel('CATEGORIZABLE_municipalCapital.xlsx')
-data_source = pd.DataFrame(data, columns=['Municipalities', 'Average capital (1 000 euro)'])
+# file in the file name you need and add the correct columns.
+file_name = 'CATEGORIZABLE_municipalCapital.xlsx'
+columns_name_list = ['Municipalities', 'Average capital (1 000 euro)']
+connected_port = 'COM4'
 
-port = serial.Serial('COM3', 9600, timeout=.1)
+# DO NOT TOUCH
+data = pd.read_excel(file_name)
+data_source = pd.DataFrame(data, columns=columns_name_list)
+comm_port = serial.Serial(connected_port, 9600, timeout=.1)
 
 
-def write_serial(value):
+def write_serial(value, dest):
     value += '#'
-    # print(value.encode('utf-8'))
-    port.write(value.encode('utf-8'))
+    dest.write(value.encode('utf-8'))
     time.sleep(0.05)
 
 
 def read_serial(source):
+    # by default, it reads until a '\n' character
     return source.read_until()
 
 
+# anticipated string: {col:col_name,row:row_number}
 def get_indices_from_select_object(serial_string):
-    # anticipated string: {col:col_name,row:row_number_int}
-    # row_number  blank => entire column
-    # column_name blank => entire row
+    # row_number  -1 => return entire column
+    # column_name '' => return entire row
     sliced_serial_list = serial_string[serial_string.find('{') + 1:serial_string.find('}')].split(',')
     indices_dict = {}
 
@@ -35,7 +39,10 @@ def get_indices_from_select_object(serial_string):
     return indices_dict
 
 
+# requires a dictionary in the form:
+
 def get_data_list(source, keys):
+    print(keys)
     if keys['col'] == '':
         return source.iloc[int(keys['row'])].tolist()
     elif int(keys['row']) == -1:
@@ -48,18 +55,33 @@ def get_serial_string_from_list(data_items_list):
     return '$'.join(map(str, data_list))
 
 
+def custom_indices_mapping(indices_dict):
+    indices_copy = indices_dict
+    # manipulate indices_copy if required
+    return indices_copy
+
+
+def custom_data_mapping(original_data_list):
+    converted_data = original_data_list
+    # manipulate converted_data if required
+    return converted_data
+
+
 if __name__ == '__main__':
+    print('Starting python script')
     while True:
         # wait for input from serial read
-        while port.in_waiting:
-            retrieved_data = read_serial(port)
-            print("retrieve", retrieved_data)
+        while comm_port.in_waiting:
+            print('Reading serial data on port: ', connected_port)
+            retrieved_data = read_serial(comm_port)
             decoded_data = retrieved_data.decode('utf-8')
-            print("decoded" + decoded_data)
+            print('Received message: ', retrieved_data)
             if decoded_data.startswith('{'):
                 indices = get_indices_from_select_object(decoded_data)
                 # do something with the indices
+                indices = custom_indices_mapping(indices)
                 data_list = get_data_list(data_source, indices)
+                print('Writing to: ', connected_port, ', data length: ', len(data_list))
                 # do something with the elements in data_list
-                print(get_serial_string_from_list(data_list))
-                write_serial(get_serial_string_from_list(data_list))
+                data_list = custom_data_mapping(data_list)
+                write_serial(get_serial_string_from_list(data_list), comm_port)
