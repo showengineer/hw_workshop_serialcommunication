@@ -25,7 +25,11 @@ def read_serial(source):
     return source.read_until()
 
 
-# anticipated string: {col:col_name,row:row_number}
+# requires a keys dictionary in the form:
+# keys = {
+# 'col': 'col_name',
+# 'row': 'row_number'
+# }
 def get_indices_from_select_object(serial_string):
     # row_number  -1 => return entire column
     # column_name '' => return entire row
