@@ -3,7 +3,8 @@ How to collect the correct data:
 2. add the name of the file you want to use in the file_name variable in the main.py file
 3. add the columns of this file in the columns_name_list variable in the main.py file
 4. add the port to which the arduino is connected in the connected_port variablein the main.py file
-5. add the size of the expected data in the arduino_serial_communication.ino file
+5. add the a column in the selected data file as a parameter in the encodeInputs() call in the arduino_serial_communication.ino file 
+6. add the size of the expected data in the arduino_serial_communication.ino file
 
 How to use the communication:
 1. upload arduino_serial_communication.ino to an arduino
