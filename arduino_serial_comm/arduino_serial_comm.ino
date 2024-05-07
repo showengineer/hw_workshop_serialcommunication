@@ -45,9 +45,10 @@ void putReceivedDataStringInData(String dirtyString){
   String subString = dirtyString;
   int i = 0;
   while (dirtyString.indexOf("$") >= 0) {
-    data[i++] = dirtyString.substring(0, dirtyString.indexOf("$"));
+    data[i] = dirtyString.substring(0, dirtyString.indexOf("$"));
     dirtyString = dirtyString.substring(dirtyString.indexOf("$") + 1, dirtyString.length());
     Serial.println(dirtyString);
+    i++;
   }
   data[i] = dirtyString;
 }
