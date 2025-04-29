@@ -1,5 +1,6 @@
 // Change this to the expected size, check the python terminal for the correct number.
 const int expectedDataSize = 3;
+const int motorPins[3] = {9,10,11};
 
 typedef struct {
   String column; 
@@ -55,12 +56,22 @@ void putReceivedDataStringInData(String dirtyString){
 void actuateOnData(String data[expectedDataSize]){
   // actuate something based on the retrieved data
 
+  for (int i = 0; i < expectedDataSize; i++) {  // three motors three country names
+    int pwmValue =  data[i].toInt();    // read value
+    pwmValue = constrain(pwmValue, 90, 255); //range (check for 90 cause thats when motor starts)
+    analogWrite(motorPins[i], pwmValue);   // put into motor
+  }
+
+
 }
 
 void setup() {
   Serial.begin(9600);
   Serial.println("Connection established");
   pinMode(A0, INPUT);
+  for (int i = 0; i < 3; i++) {
+    pinMode(motorPins[i], OUTPUT);  
+  }
 }
 
 void loop() {  
