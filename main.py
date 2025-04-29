@@ -6,6 +6,7 @@ import pandas as pd
 # file in the file name you need and add the correct columns.
 file_name = 'CONTINUOUS_TIME_GreenhouseGasses.xlsx'
 columns_name_list = [f'{x}' for x in range(1901, 2018)]
+columns_name_list.insert(0, "Country")
 connected_port = 'COM10'
 
 # DO NOT TOUCH
