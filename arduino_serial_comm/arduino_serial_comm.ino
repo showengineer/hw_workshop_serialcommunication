@@ -1,5 +1,5 @@
 // Change this to the expected size, check the python terminal for the correct number.
-const int expectedDataSize = 120;
+const int expectedDataSize = 119;
 
 typedef struct {
   String column; 

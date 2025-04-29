@@ -4,8 +4,8 @@ import pandas as pd
 
 # save file in the same folder as the python file.
 # file in the file name you need and add the correct columns.
-file_name = 'CATEGORIZABLE_municipalCapital.xlsx'
-columns_name_list = ['Municipalities', 'Average capital (1 000 euro)']
+file_name = 'CONTINUOUS_TIME_GreenhouseGasses.xlsx'
+columns_name_list = [x for x in range(1901, 2018)]
 connected_port = 'COM4'
 
 # DO NOT TOUCH
