@@ -1,5 +1,5 @@
 // Change this to the expected size, check the python terminal for the correct number.
-const int expectedDataSize = 119;
+const int expectedDataSize = 3;
 
 typedef struct {
   String column; 
@@ -54,16 +54,19 @@ void putReceivedDataStringInData(String dirtyString){
 
 void actuateOnData(String data[expectedDataSize]){
   // actuate something based on the retrieved data
+
 }
 
 void setup() {
   Serial.begin(9600);
   Serial.println("Connection established");
+  pinMode(A0, INPUT);
 }
 
 void loop() {  
-  
-  DataSelection keys = encodeInputs("2000", -1);
+  int potValue = analogRead(A0);
+  int year = map(potValue, 0, 1023, 1901, 2017);
+  DataSelection keys = encodeInputs(String(year), -1);
   requestData(keys);
   
   delay(100);
