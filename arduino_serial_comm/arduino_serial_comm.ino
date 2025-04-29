@@ -63,7 +63,7 @@ void setup() {
 
 void loop() {  
   
-  DataSelection keys = encodeInputs("2000", 1);
+  DataSelection keys = encodeInputs("2000", -1);
   requestData(keys);
   
   delay(100);
