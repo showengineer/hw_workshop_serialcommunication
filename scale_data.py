@@ -14,7 +14,9 @@ df_long["LogValue"] = np.log(df_long["Value"])
 # 4. Min-max scale log values to 0-255 and convert to int
 log_min = df_long["LogValue"].min()
 log_max = df_long["LogValue"].max()
-df_long["Scaled255"] = ((df_long["LogValue"] - log_min) / (log_max - log_min) * 255).round().astype(int)
+
+a, b = 100, 255
+df_long["Scaled255"] = (a + (df_long["LogValue"] - log_min) / (log_max - log_min) * (b - a)).round().astype(int)
 
 # 5. Pivot back to wide format for the scaled values
 df_scaled = df_long.pivot(index="Country", columns="Year", values="Scaled255").reset_index()
